@@ -93,11 +93,10 @@ if [[ -f .gitmodules ]]; then
   git submodule summary | sed -En "s/^\* (\S+) (\S+)\.\.\.(\S+).*/gitmodule \1 \2 \3/p" >> "$LOG"
 fi
 
-sort -u "$LOG" | summary >> "$GITHUB_STEP_SUMMARY"
-echo "changes=$(wc -l < "$LOG")" >> "$GITHUB_OUTPUT"
-
 if ! git diff --staged --quiet; then
   git config user.name "github-actions[bot]"
   git config user.email "github-actions[bot]@users.noreply.github.com"
+
+  sort -u "$LOG" | summary > "$GITHUB_STEP_SUMMARY"
   git commit --message "chore(deps): automatic update" --message "$(< "$GITHUB_STEP_SUMMARY")"
 fi

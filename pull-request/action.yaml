@@ -13,16 +13,23 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Push
+    - name: Detect Changes
       shell: bash
+      id: detect-changes
+      run: echo "count=$(git rev-list --count "@{u}..")" >> "$GITHUB_OUTPUT"
+
+    - name: Push Branch
+      shell: bash
+      if: steps.detect-changes.outputs.count > 0
       env:
         BRANCH: ${{ inputs.branch }}
       run: |
         git checkout -B "$BRANCH"
         git push --force origin "$BRANCH"
 
-    - name: Create PR
+    - name: Create Pull Request
       shell: bash
+      if: steps.detect-changes.outputs.count > 0
       env:
         HEAD: ${{ inputs.branch }}
         BASE: ${{ github.ref_name }}

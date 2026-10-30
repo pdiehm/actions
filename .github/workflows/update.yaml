@@ -21,13 +21,11 @@ jobs:
         with:
           token: ${{ secrets.CI_TOKEN }}
 
-      - id: update
-        name: Update
-        uses: pdiehm/actions/update@main
+      - name: Update
+        uses: $/update
 
       - name: Pull Request
-        uses: pdiehm/actions/pull-request@main
-        if: ${{ steps.update.outputs.changes > 0 }}
+        uses: $/pull-request
         with:
           token: ${{ secrets.CI_TOKEN }}
           branch: ci/update
