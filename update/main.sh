@@ -17,6 +17,7 @@ extract() {
 
   case "$fmt" in
     dockerfile) sed -En "s|^FROM.* (\S+):(\S+).*|\1 \2|p" "${files[@]}" ;;
+    docker-compose) sed -En "s|^\s*image: (\S+):(\S+).*|\1 \2|p" "${files[@]}" ;;
     github-workflow) sed -En "s|^\s*-? uses: (\S+)@(\S+).*|\1 \2|p" "${files[@]}" ;;
   esac
 }
@@ -27,6 +28,7 @@ insert() {
   while read -r name old new; do
     case "$fmt" in
       dockerfile) sed -Ei "s|^(FROM.*) $(escre "$name:$old")|\1 $(escsub "$name:$new")|" "${files[@]}" ;;
+      docker-compose) sed -Ei "s|^(\s*image:) $(escre "$name:$old")|\1 $(escsub "$name:$new")|" "${files[@]}" ;;
       github-workflow) sed -Ei "s|^(\s*-? uses:) $(escre "$name@$old")|\1 $(escsub "$name@$new")|" "${files[@]}" ;;
     esac
   done
@@ -82,6 +84,7 @@ summary() {
 }
 
 update docker dockerfile ./**/Dockerfile
+update docker docker-compose ./**/compose.yaml
 update github github-workflow .github/workflows/*.yaml
 
 sort -u "$LOG" | summary >> "$GITHUB_STEP_SUMMARY"
