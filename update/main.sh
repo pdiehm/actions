@@ -87,6 +87,12 @@ update docker dockerfile ./**/Dockerfile
 update docker docker-compose ./**/compose.yaml
 update github github-workflow .github/workflows/*.yaml
 
+if [[ -f .gitmodules ]]; then
+  git submodule update --init --remote
+  git submodule status | sed -En "s/^\+\S+ (\S+) \S+$/\1/p" | xargs -r git add
+  git submodule summary | sed -En "s/^\* (\S+) (\S+)\.\.\.(\S+).*/gitmodule \1 \2 \3/p" >> "$LOG"
+fi
+
 sort -u "$LOG" | summary >> "$GITHUB_STEP_SUMMARY"
 echo "changes=$(wc -l < "$LOG")" >> "$GITHUB_OUTPUT"
 
