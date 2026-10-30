@@ -1,0 +1,33 @@
+name: Update
+
+on:
+  schedule:
+    - cron: 0 0 * * 0
+
+  workflow_call:
+    secrets:
+      CI_TOKEN:
+        description: Token with Contents, PR and Workflow write access
+        required: true
+
+jobs:
+  update:
+    name: Update
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.0
+        with:
+          token: ${{ secrets.CI_TOKEN }}
+
+      - id: update
+        name: Update
+        uses: pdiehm/actions/update@main
+
+      - name: Pull Request
+        uses: pdiehm/actions/pull-request@main
+        if: ${{ steps.update.outputs.changes > 0 }}
+        with:
+          token: ${{ secrets.CI_TOKEN }}
+          branch: ci/update

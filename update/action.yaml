@@ -1,0 +1,10 @@
+name: Update
+description: Update versions of dependencies
+
+outputs:
+  changes:
+    description: Number of applied updates
+
+runs:
+  using: docker
+  image: Dockerfile

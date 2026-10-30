@@ -1,0 +1,32 @@
+name: Pull Request
+description: Create pull request
+
+inputs:
+  token:
+    description: Token with PR write access
+    default: ${{ github.token }}
+
+  branch:
+    description: Name for head branch
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Push
+      shell: bash
+      env:
+        BRANCH: ${{ inputs.branch }}
+      run: |
+        git checkout -B "$BRANCH"
+        git push --force origin "$BRANCH"
+
+    - name: Create PR
+      shell: bash
+      env:
+        HEAD: ${{ inputs.branch }}
+        BASE: ${{ github.ref_name }}
+        GH_TOKEN: ${{ inputs.token }}
+      run: |
+        COUNT="$(gh pr list --base "$BASE" --head "$HEAD" --json id --jq length)"
+        if ((COUNT == 0)); then gh pr create --fill --base "$BASE" --head "$HEAD"; fi
