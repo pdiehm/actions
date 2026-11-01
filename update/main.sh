@@ -75,7 +75,7 @@ summary() {
   while read -r src name old new; do
     if [[ $src != "$last" ]]; then
       if [[ $last ]]; then echo -e "\n"; fi
-      echo "- **${src^}**"
+      echo "### ${src^}"
       last="$src"
     fi
 
