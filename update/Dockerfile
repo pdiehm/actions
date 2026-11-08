@@ -1,4 +1,4 @@
-FROM alpine:3.24.3
+FROM alpine:3.24.4
 
 RUN apk update && apk upgrade && apk add bash git crane
 COPY main.sh /main.sh
